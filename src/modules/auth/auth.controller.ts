@@ -7,7 +7,9 @@ import { AuthService } from "./auth.service";
 import * as bcrypt from "bcrypt";
 
 import { jwtConstants, emailRegex, nameRegex } from "src/constants";
-
+interface LooseObject {
+  [key: string]: any;
+}
 @Controller("auth")
 export class AuthController {
   constructor(
@@ -41,7 +43,7 @@ export class AuthController {
     try {
       const [body, errors] = await this.checkSignUpValidation(signupDto);
 
-      if (errors.length > 0) {
+      if (Object.keys(errors).length > 0) {
         return res.status(401).json(errors);
       }
 
@@ -109,28 +111,29 @@ export class AuthController {
 
   // helper functions
   checkSignUpValidation = async (body) => {
-    const errors = [];
+    let errors: any = {};
+
     //email
     const checkUser = await this.userService.findByEmail(body.email);
     if (checkUser && checkUser.email) {
-      errors.push({ email: `${checkUser.email} already registered` });
+      errors.email = `${checkUser.email} already registered`;
     } else {
       const re = emailRegex;
       if (!re.test(String(body.email).toLowerCase())) {
-        errors.push({ email: "Invalid Email Format" });
+        errors.email = "Invalid Email Format";
       }
     }
     //name
     const letters = nameRegex;
     if (!body.fullName.match(letters)) {
-      errors.push({ name: "Name must be string" });
+      errors.username = "Name must be string";
     }
     // username
     const checkUserWithUsername = await this.userService.findByUsername(
       body.username
     );
     if (checkUserWithUsername && checkUserWithUsername.username) {
-      errors.push({ username: "Username Already Registered" });
+      errors.username = "Username Already Registered";
     }
 
     const checkUserPhoneNumber = await this.userService.findOneByPhone(
@@ -138,7 +141,7 @@ export class AuthController {
     );
 
     if (checkUserPhoneNumber && checkUserPhoneNumber.phone) {
-      errors.push({ phone: "Phone Number Already Used" });
+      errors.phone = "Phone Number Already Used";
     }
 
     return [body, errors];
