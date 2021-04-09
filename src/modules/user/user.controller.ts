@@ -11,6 +11,6 @@ export class UserController {
   @Get("/")
   async getProfile(@Req() req, @Res() res) {
     const user = await this.userService.findById(req.user.userId);
-    return res.json({ data: req.user });
+    return res.json({ data: user });
   }
 }
