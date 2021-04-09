@@ -63,4 +63,7 @@ export class UserService {
       { password: body.password }
     );
   }
+  async findById(id: any) {
+    return await this.userRepository.findById(id);
+  }
 }

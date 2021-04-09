@@ -29,7 +29,7 @@ export class AuthController {
       return res.json({
         status: "success",
         message: "Successfully LoggedIn",
-        data: response,
+        token: response,
       });
     } catch (error) {
       return res
@@ -52,7 +52,7 @@ export class AuthController {
         // roles: [signupDto.role],
         password: bcrypt.hashSync(signupDto.password, jwtConstants.salt),
       });
-      const user = await this.authService.login({
+      const token = await this.authService.login({
         identifier: signupDto.email,
         password: signupDto.password,
       });
@@ -64,7 +64,7 @@ export class AuthController {
       return res.status(201).json({
         status: "success",
         message: "Successfully SignUp",
-        data: user,
+        token,
       });
     } catch (error) {
       return res
